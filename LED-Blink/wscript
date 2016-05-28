@@ -22,6 +22,7 @@ def configure(cfg):
 	print('→ configuring the project in ' + cfg.path.abspath())
 	# Toolchain configurations
 	cfg.env.CC = cfg.options.toolchain + "gcc"
+	cfg.env.AR = cfg.options.toolchain + "ar"
 	cfg.env.AS = cfg.options.toolchain + "gcc"
 	cfg.env.LD = cfg.options.toolchain + "ld"
 	cfg.env.OBJCOPY = cfg.options.toolchain + 'objcopy'
@@ -63,7 +64,8 @@ def configure(cfg):
 	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c'])
 	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c'])
 	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c'])
-#Drivers/BSP/STM32F429I_DISCO
+	
+	#Drivers/BSP/STM32F429I_DISCO
 	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c'])
 	
 	#cfg.env.append_unique('ASFLAGS_STM32F429',	['-xassembler-with-cpp', '-nostartfiles', '-c'])
@@ -71,8 +73,9 @@ def configure(cfg):
 	cfg.env.append_unique('LINKFLAGS_STM32F429',	['-T{0}'.format(link_script)
 		# Disable Semihosting
 		,'--specs=nosys.specs'
-		,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/../../../../arm-none-eabi/lib/libc.a'
-		,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/libgcc.a'] )
+		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/../../../../arm-none-eabi/lib/libc.a'
+		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/libgcc.a'
+		] )
 	cfg.env.append_unique('DEFINES_STM32F429', 
 		[
 		'STM32F429xx',
@@ -87,6 +90,8 @@ def configure(cfg):
 
 
 def build(bld):
+	
+	print('→ building the project in ' + bld.path.abspath())
 	bld(export_includes = 
     ['Inc',
     '../../STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery',
@@ -129,5 +134,6 @@ def program(pgm):
 
 from waflib.Build import BuildContext
 class Program(BuildContext):
-    cmd = 'program'
-    fun = 'program'
+	cmd = 'program'
+	fun = 'program'
+	

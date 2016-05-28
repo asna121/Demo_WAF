@@ -7,14 +7,16 @@
 測試環境是*Ubuntu 14.04 LTS* 預先安裝了*WAF*和*ARM-GCC*
 
 - WAF [官網](http://code.google.com/p/waf/) 另外可以去參考，站內底下的連結 *WAF Book* 和 *API DOC* 
-- WAF 野生玩家 [可以看看](https://github.com/leemars/waf-learning)
 
 - GCC ARM Embedded [官網](http://launchpad.net/gcc-arm-embedded/+download)
 
 到STM官網下載最新的 STM32CubeF4 Package，以及STLINK Driver
 
 - ST [STM32CubeF4](http://www.st.com/content/st_com/en/products/embedded-software/mcus-embedded-software/stm32-embedded-software/stm32cube-embedded-software/stm32cubef4.html) 下載連結在頁面底下，解壓縮後把此檔案與GitHub上的資料夾放在一起。
-- ST-LINK/V2 [STSW-LINK009](http://www.st.com/content/st_com/en/products/development-tools/hardware-development-tools/development-tool-hardware-for-mcus/debug-hardware-for-mcus/debug-hardware-for-stm32-mcus/st-link-v2.html) 版本尚未確定，下載連結在頁面底下
+
+安裝ST-LINK工具
+- HACKPAD [st-link](https://stm32f429.hackpad.com/WbiooOfkaoR_cPHciRtOYRJ#NOTE) 請參考連結操作。
+- 其他安裝參考 [st-link](http://startingelectronics.org/tutorials/STM32-microcontrollers/programming-STM32-flash-in-Linux/)
 
 ## WAF Command
 
@@ -32,3 +34,10 @@
 
 ### LED-Blink
 在STM板子上，按下Buttom(藍色)，可以看到LED亮起來，再按一次會熄滅
+
+
+
+
+## Reference
+
+- WAF 野生玩家 [可以看看](https://github.com/leemars/waf-learning)
