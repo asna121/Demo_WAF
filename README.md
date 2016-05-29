@@ -35,7 +35,8 @@
 ### LED-Blink
 在STM板子上，按下Buttom(藍色)，可以看到LED亮起來，再按一次會熄滅
 
-
+### LTDC_Display_2Layers
+使用STM板子上的LCD螢幕，顯示出一個交錯的ST LOGO
 
 
 ## Reference
