@@ -44,31 +44,28 @@ def configure(cfg):
 			 		,'-mfpu=fpv4-sp-d16','-mfloat-abi=softfp'
 			 		,'-g','-std=c99','-Wall','-O3','-ffast-math','-ffunction-sections','-fdata-sections','-Wl,--gc-sections','-fno-common','--param','max-inline-insns-single=1000'
 			 		])
-	#My restart
-	#Drivers/CMSIS
-	cfg.env.append_unique('FILES_STM32F429',		['Src/*.c'])
+	# My Src File
+	cfg.env.append_unique('FILES_STM32F429',	['Src/*.c'])
 	
 	# STARTUP FILE
-	cfg.env.append_unique('FILES_STM32F429',		['CORTEX_M4F_STM32F4/startup_stm32f429xx.s'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c'])
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c'])
+	cfg.env.append_unique('FILES_STM32F429',	['CORTEX_M4F_STM32F4/startup_stm32f429xx.s'])
 	
-	#Drivers/BSP/STM32F429I_DISCO
-	cfg.env.append_unique('FILES_LIB',		['../../STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c'])
+	# Drivers/STM32F4xx_HAL_Driver
+	cfg.env.append_unique('FILES_LIB',			['STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/*.c'])
+
+	# Drivers/BSP/STM32F429I_DISCO
+	cfg.env.append_unique('FILES_LIB',			['STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c'])
 	
-	#cfg.env.append_unique('ASFLAGS_STM32F429',	['-xassembler-with-cpp', '-nostartfiles', '-c'])
+
+	# My Inc File
+	cfg.env.append_unique('INCLUDES_STM32F429',['Inc'])
+
+	# All STM32F4 Include
+	cfg.env.append_unique('INCLUDES_LIB',		['STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery',
+												'STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Inc',
+												'STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Include',
+												'STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include'])
+
 	# to run from FLASH (Wait)
 	cfg.env.append_unique('LINKFLAGS_STM32F429',	['-T{0}'.format(link_script)
 		# Disable Semihosting
@@ -76,6 +73,8 @@ def configure(cfg):
 		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/../../../../arm-none-eabi/lib/libc.a'
 		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/libgcc.a'
 		] )
+	
+	#My Define
 	cfg.env.append_unique('DEFINES_STM32F429', 
 		[
 		'STM32F429xx',
@@ -85,47 +84,18 @@ def configure(cfg):
 		]
 		)
 
-
-
-
-
 def build(bld):
 	
 	print('→ building the project in ' + bld.path.abspath())
-	bld(export_includes = 
-    ['Inc',
-    '../../STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery',
-    '../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Inc',
-    '../../STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Include',
-    '../../STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include']
-    , name='include')
-    
-    #bld.objects(
-    #source = 'CORTEX_M4F_STM32F4/startup_stm32f429xx.s',
-    #target ='sta',
-    #includes = 'include',
-    #defines = bld.env.DEFINES_STM32F429,
-    #linkflags = bld.env.LINKFLAGS_STM32F429
-    #)
 	
 	bld.program(
-    #source = ['CORTEX_M4F_STM32F4/startup_stm32f429xx.s','Src/main.c'],
-    #source = '../../STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c',
-    source = bld.path.ant_glob(bld.env.FILES_STM32F429) + bld.env.FILES_LIB,
+    source = bld.path.ant_glob(bld.env.FILES_STM32F429) + bld.path.parent.parent.ant_glob(bld.env.FILES_LIB),
+    includes = bld.env.INCLUDES_STM32F429 + bld.path.parent.parent.ant_glob(bld.env.INCLUDES_LIB,dir=True, src=False),
     target ='Display.elf',
     defines = bld.env.DEFINES_STM32F429,
-    linkflags = bld.env.LINKFLAGS_STM32F429,
-    use = ['include'] 
+    linkflags = bld.env.LINKFLAGS_STM32F429, 
     )
-    #ctx.recurse(modules, mandatory=False)
-    #bld.program(
-	#	source = bld.path.ant_glob(bld.env.FILES_STM32F429),
-	#	target = 'Display.elf', 
-	#	includes = 'include', 
-	#	defines = bld.env.DEFINES_STM32F429,
-	#	linkflags = bld.env.LINKFLAGS_STM32F429,
-	#	use = 'stttt'
-	#	)
+
 	bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}', source='Display.elf', target='Display.bin', name='objcopy')
 	bld(rule='${SIZE} ${SRC}', source='Display.elf', always=True, name='size')
 
