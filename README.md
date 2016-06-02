@@ -2,17 +2,17 @@
 
 這裡說明有那些Demo資料夾及要如何使用。
 
-## 前期準備
+## Prerequisite
 
 測試環境是*Ubuntu 14.04 LTS* 預先安裝了*WAF*和*ARM-GCC*
 
 - WAF [官網](http://code.google.com/p/waf/) 另外可以去參考，站內底下的連結 *WAF Book* 和 *API DOC* 
 
-- GCC ARM Embedded [官網](http://launchpad.net/gcc-arm-embedded/+download)
+- GCC ARM Embedded 4.8版本(其他版本有可能不支援這顆ARM Soc) [官網](http://launchpad.net/gcc-arm-embedded/+download)
 
 到STM官網下載最新的 STM32CubeF4 Package，以及STLINK Driver
 
-- ST [STM32CubeF4](http://www.st.com/content/st_com/en/products/embedded-software/mcus-embedded-software/stm32-embedded-software/stm32cube-embedded-software/stm32cubef4.html) 下載連結在頁面底下，解壓縮後把此檔案與GitHub上的資料夾放在一起。
+- ST版本為V1.8.0 [STM32CubeF4](http://www.st.com/content/st_com/en/products/embedded-software/mcus-embedded-software/stm32-embedded-software/stm32cube-embedded-software/stm32cubef4.html) 下載連結在頁面底下，解壓縮後把此檔案與GitHub上的資料夾放在一起。
 
 安裝ST-LINK工具
 - HACKPAD [st-link](https://stm32f429.hackpad.com/WbiooOfkaoR_cPHciRtOYRJ#NOTE) 請參考連結操作。
@@ -37,6 +37,9 @@
 
 ### LTDC_Display_2Layers
 使用STM板子上的LCD螢幕，顯示出一個交錯的ST LOGO
+
+### FreeRTOS_ThreadCreation
+實作FreeRTOS的thread，可以接替產生閃爍LED燈，使用原始FreeRTOS的API
 
 
 ## Reference
