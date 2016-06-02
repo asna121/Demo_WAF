@@ -27,18 +27,21 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "task.h"
+//#include "cmsis_os.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-osThreadId LEDThread1Handle, LEDThread2Handle;
+//osThreadId LEDThread1Handle, LEDThread2Handle;
+xTaskHandle LEDThread1Handle, LEDThread2Handle;
 
 /* Private function prototypes -----------------------------------------------*/
-static void LED_Thread1(void const *argument);
-static void LED_Thread2(void const *argument);
-static void SystemClock_Config(void);
+void LED_Thread1(void *argument);
+void LED_Thread2(void *argument);
+void SystemClock_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -64,21 +67,28 @@ int main(void)
   /* Configure the system clock to 180 MHz */
   SystemClock_Config();
   
+  //BSP_LED_Toggle(LED3);
+  //BSP_LED_Toggle(LED4);
   /* Thread 1 definition */
-  osThreadDef(LED3, LED_Thread1, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-  
+  //osThreadDef(LED3, LED_Thread1, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  xTaskCreate(LED_Thread1,"LED_3", configMINIMAL_STACK_SIZE, NULL , 0, &LEDThread1Handle);
   /* Thread 2 definition */
-  osThreadDef(LED4, LED_Thread2, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-  
+  //BSP_LED_Toggle(LED3);
+  //BSP_LED_Toggle(LED4); 
+  //osThreadDef(LED4, LED_Thread2, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  xTaskCreate(LED_Thread2,"LED_4", configMINIMAL_STACK_SIZE, NULL , 0, &LEDThread2Handle);
+
+  //BSP_LED_Toggle(LED4); 
+
   /* Start thread 1 */
-  LEDThread1Handle = osThreadCreate (osThread(LED3), NULL);
+  //LEDThread1Handle = osThreadCreate (osThread(LED3), NULL);
   
   /* Start thread 2 */
-  LEDThread2Handle = osThreadCreate (osThread(LED4), NULL);
+  //LEDThread2Handle = osThreadCreate (osThread(LED4), NULL);
   
   /* Start scheduler */
-  osKernelStart();
-
+  //osKernelStart();
+  vTaskStartScheduler();
   /* We should never get here as control is now taken by the scheduler */
   for(;;);
 }
@@ -88,41 +98,50 @@ int main(void)
   * @param  thread not used
   * @retval None
   */
-static void LED_Thread1(void const *argument)
+void LED_Thread1(void *argument)
 {
-  uint32_t count = 0;
+  //uint32_t count = 0;
+  TickType_t xLastWakeTime;
   (void) argument;
   
   for(;;)
   {
-    count = osKernelSysTick() + 5000;
+    //count = osKernelSysTick() + 5000;
+    xLastWakeTime = xTaskGetTickCount() + 5000;
     
     /* Toggle LED3 every 200 ms for 5 s */
-    while (count >= osKernelSysTick())
+    //while (count >= osKernelSysTick())
+    while (xLastWakeTime >= xTaskGetTickCount())
     {
       BSP_LED_Toggle(LED3);
       
-      osDelay(200);
+      //osDelay(200);
+      vTaskDelay(200);
     }
     
     /* Turn off LED3 */
     BSP_LED_Off(LED3);
     
     /* Suspend Thread 1 */
-    osThreadSuspend(NULL);
+    //osThreadSuspend(NULL);
+    vTaskSuspend(NULL);
     
-    count = osKernelSysTick() + 5000;
+    //count = osKernelSysTick() + 5000;
+    xLastWakeTime = xTaskGetTickCount() + 5000;
     
     /* Toggle LED3 every 400 ms for 5 s */
-    while (count >= osKernelSysTick())
+    //while (count >= osKernelSysTick())
+    while (xLastWakeTime >= xTaskGetTickCount())
     {
       BSP_LED_Toggle(LED3);
       
-      osDelay(400);
+      //osDelay(200);
+      vTaskDelay(400);
     }
     
     /* Resume Thread 2 */
-    osThreadResume(LEDThread2Handle);
+    //osThreadResume(LEDThread2Handle);
+    vTaskResume(LEDThread2Handle);
   }
 }
 
@@ -131,31 +150,36 @@ static void LED_Thread1(void const *argument)
   * @param  argument not used
   * @retval None
   */
-static void LED_Thread2(void const *argument)
+void LED_Thread2(void *argument)
 {
-  uint32_t count;
+  //uint32_t count;
+  TickType_t xLastWakeTime;
   (void) argument;
   
   for(;;)
   {
-    count = osKernelSysTick() + 10000;
+    //count = osKernelSysTick() + 10000;
+    xLastWakeTime = xTaskGetTickCount() + 10000;
     
     /* Toggle LED4 every 500 ms for 10 s */
-    while (count >= osKernelSysTick())
+    //while (count >= osKernelSysTick())
+    while (xLastWakeTime >= xTaskGetTickCount())
     {
       BSP_LED_Toggle(LED4);
 
-      osDelay(500);
+      //osDelay(500);
+      vTaskDelay(500);
     }
     
     /* Turn off LED4 */
     BSP_LED_Off(LED4);
     
     /* Resume Thread 1 */
-    osThreadResume(LEDThread1Handle);
-    
+    //osThreadResume(LEDThread1Handle);
+    vTaskResume(LEDThread1Handle);
     /* Suspend Thread 2 */
-    osThreadSuspend(NULL);  
+    //osThreadSuspend(NULL);
+    vTaskSuspend(NULL);  
   }
 }
 
@@ -179,7 +203,7 @@ static void LED_Thread2(void const *argument)
   * @param  None
   * @retval None
   */
-static void SystemClock_Config(void)
+void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;

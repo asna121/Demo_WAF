@@ -1,3 +1,17 @@
+# My Comment
+All the file are from orignal CubeF4 Package except two file "main.c" and "stm32f4xx_it.c" in Inc folder.
+
+In the main.c file, we use original FreeRTOS API instead of CMSIS_RTOS API. 
+Thus we include #include "FreeRTOS.h", #include "task.h" and comment //#include "cmsis_os.h"
+
+In stm32f4_it.c file, we modified SysTick_Handler(void) like below:
+
+void SysTick_Handler(void)
+{
+  xPortSysTickHandler();
+  //osSystickHandler();
+}
+
 /**
   @page FreeRTOS_ThreadCreation FreeRTOS Thread Creation application
  
