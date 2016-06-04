@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import os
+import time
+import glob
+#Rename from "LED-Blink"
+APPNAME = 'lED-toggle-switch'
+VERSION = 'v0.2'
+
+top	= '.'
+out	= 'build'
+
+def options(opt):
+
+	opt.load('gcc gas')
+
+	opt.add_option('--toolchain', action='store', default='arm-none-eabi-', help='Set toolchain prefix')
+
+def configure(cfg):
+
+	print('→ configuring the project in ' + cfg.path.abspath())
+	# Toolchain configurations
+	cfg.env.CC = cfg.options.toolchain + "gcc"
+	cfg.env.AR = cfg.options.toolchain + "ar"
+	cfg.env.AS = cfg.options.toolchain + "gcc"
+	#use 'gcc' rather than 'ld'
+	cfg.env.LD = cfg.options.toolchain + "gcc"
+	cfg.env.OBJCOPY = cfg.options.toolchain + 'objcopy'
+	cfg.env.OBJDUMP = cfg.options.toolchain + 'objdump'
+	cfg.env.SIZE = cfg.options.toolchain + 'size'
+	cfg.load('gcc gas')
+
+	cfg.find_program('ld', var='LD')
+	cfg.find_program('objcopy', var='OBJCOPY')
+	cfg.find_program('objdump', var='OBJDUMP')
+	cfg.find_program('size', var='SIZE')
+	cfg.find_program('st-flash', var='st-flash')
+	
+
+	# Cortex-M4 implements the ARMv7E-M architecture
+	link_script = '../CORTEX_M4F_STM32F4/STM32F429ZI_FLASH.ld'
+
+	cfg.env.append_unique('CFLAGS',				[
+												'-mcpu=cortex-m4','-march=armv7e-m', '-mtune=cortex-m4', '-mlittle-endian'
+												, '-mthumb','-g','-std=c99','-Wall','-mfpu=fpv4-sp-d16','-mfloat-abi=softfp'
+			 									,'-g','-std=c99','-Wall','-O3','-ffast-math','-ffunction-sections'
+			 									,'-fdata-sections','-Wl,--gc-sections','-fno-common'
+			 									,'--param','max-inline-insns-single=1000'
+			 									])
+	# My Src File
+	cfg.env.append_unique('FILES_STM32F429',	['Src/*.c'])
+	
+	# STARTUP FILE
+	cfg.env.append_unique('FILES_STM32F429',	['CORTEX_M4F_STM32F4/startup_stm32f429xx.s'])
+	
+	# Drivers/STM32F4xx_HAL_Driver
+	cfg.env.append_unique('FILES_LIB',			['STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Src/*.c'])
+
+	# Drivers/BSP/STM32F429I_DISCO
+	cfg.env.append_unique('FILES_LIB',			['STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c'])
+	
+	# My Inc File
+	cfg.env.append_unique('INCLUDES_STM32F429',	['Inc'])
+
+	# All STM32F4 Include
+	cfg.env.append_unique('INCLUDES_LIB',		['STM32Cube_FW_F4_V1.8.0/Drivers/BSP/STM32F429I-Discovery'
+												,'STM32Cube_FW_F4_V1.8.0/Drivers/STM32F4xx_HAL_Driver/Inc'
+												,'STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Include'
+												,'STM32Cube_FW_F4_V1.8.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include'
+												])
+
+	# to run from FLASH (Wait)
+	cfg.env.append_unique('LINKFLAGS_STM32F429',[
+												'-T{0}'.format(link_script)
+												,'-mthumb','-march=armv7e-m','-mfloat-abi=softfp','-mfpu=fpv4-sp-d16'
+												,'-mcpu=cortex-m4','-mtune=cortex-m4'
+												# Disable Semihosting
+												,'--specs=nosys.specs'
+												#,'--print-multi-lib'
+		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/../../../../arm-none-eabi/lib/libc.a'
+		#,'/usr/local/gcc-arm/bin/../lib/gcc/arm-none-eabi/5.3.1/libgcc.a'
+												])
+	
+	#My Define
+	cfg.env.append_unique('DEFINES_STM32F429', 
+		[
+		'STM32F429xx',
+		'VECT_TAB_FLASH',
+		#'"assert_param(expr)=((void)0)"',
+		'USE_HAL_DRIVER','USE_STM32F429I_DISCO'
+		]
+		)
+
+def build(bld):
+	
+	print('→ building the project in ' + bld.path.abspath())
+	
+	bld.program(
+    source = bld.path.ant_glob(bld.env.FILES_STM32F429) + bld.path.parent.parent.ant_glob(bld.env.FILES_LIB),
+    includes = bld.env.INCLUDES_STM32F429 + bld.path.parent.parent.ant_glob(bld.env.INCLUDES_LIB,dir=True, src=False),
+    target ='LED-Toggle-Switch.elf',
+    defines = bld.env.DEFINES_STM32F429,
+    linkflags = bld.env.LINKFLAGS_STM32F429, 
+    )
+
+	bld(rule='${OBJCOPY} -O binary ${SRC} ${TGT}', source='LED-Toggle-Switch.elf', target='LED-Toggle-Switch.bin', name='objcopy')
+	bld(rule='${SIZE} ${SRC}', source='LED-Toggle-Switch.elf', always=True, name='size')
+
+def program(pgm):
+	pgm(rule='st-flash write ${SRC} 0x8000000', source='LED-Toggle-Switch.bin', name='STLINK', always=True)
+
+from waflib.Build import BuildContext
+class Program(BuildContext):
+	cmd = 'program'
+	fun = 'program'
+	
